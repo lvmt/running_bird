@@ -1,0 +1,4 @@
+GeneName    r   --colsWanted 5
+refGene g   --splicing_threshold 10 --transcript_function
+Gencode r   --colsWanted 5
+cytoBand    r   N
