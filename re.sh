@@ -3,7 +3,6 @@
 # shell 字符串比较
 # 正则表达式
 
-
 echo "开始测试"
 infile=$1
 
@@ -21,4 +20,5 @@ then
 else
     echo "必须输入vcf文件啥"
 fi
+
 
