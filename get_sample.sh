@@ -47,10 +47,11 @@ function get_head_index_array() {
     done
 }
 
-if [[ "$infile"x != ""x ]];then
+if [ -s $infile ];then
+    echo "得到首行索引字典"
     get_head_index_array 
 else
-    echo "\033[31m请指定输入文件！！\033[0m"
+    echo -e "\033[31m请指定输入文件！！\033[0m"
     exit
 fi
 
@@ -76,31 +77,34 @@ get_index
 
 
 ## 根据指定条件，得到结果文件
-function result(){
+function result() {
    
     head -1 ${infile} > result.xls
     fileline=` expr $(wc -l < ${infile}) - 1 `   
     echo $fileline
     #利用sed遍历每行文件
-    for i in `seq 1 5`;do
+    for i in `seq 1 ${fileline}`;do
         childtype=$(sed '1d' ${infile} | sed -n "${i}p" | cut -f ${childindex})
+        fathertype=$(sed '1d' ${infile} | sed -n "${i}p" | cut -f ${fatherindex})
+        mathertype=$(sed '1d' ${infile} | sed -n "${i}p" | cut -f ${matherindex})
+        othertype=$(sed '1d' ${infile} | sed -n "${i}p" | cut -f ${otherindex})
+        
         if [[ ${childtype} =~ "0/1" ]];then
-            echo $childtype
-        else    
-            echo "非杂合位点" ${childtype}
+            if [[ ${mathertype} =~ "0/1" ]];then
+                if [[ ! ${fathertype} =~ "0/1"  ]];then
+                    if [[ $othertype =~ "0/1" ]];then
+                        echo $childtype $mathertype $fathertype $othertype
+                    fi
+                fi
+            fi
+        else
+            echo "孩子不是杂合位点，删掉" $childtype
         fi
     done
-    #fathertype=$(sed)
-   
+  
 }
 
 result
 
-    
-# infile=$1
 
-# # test  head_index_array
-# echo ${headindex[@]}
-# echo ${headindex["Expression_Visual_Link"]} 
-# echo ${headindex["Priority"]}
 
