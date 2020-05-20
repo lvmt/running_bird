@@ -7,7 +7,7 @@ mather=""
 child=""
 other=""
 
-while getopts "p:m:c:o:i:h" opt;do
+while getopts ":p:m:c:o:i:h" opt; do
     case $opt in 
     p)
         father=$OPTARG
@@ -47,11 +47,16 @@ function get_head_index_array() {
     done
 }
 
-get_head_index_array 
+if [[ "$infile"x != ""x ]];then
+    get_head_index_array 
+else
+    echo "\033[31m请指定输入文件！！\033[0m"
+    exit
+fi
 
 
 # 得到指定父母孩子的信息
-function get_index(){
+function get_index() {
     childindex=${headindex[$child]}
     fatherindex=${headindex["$father"]}
     matherindex=${headindex["$mather"]}
@@ -66,6 +71,7 @@ function get_index(){
 
 }
 
+
 get_index
 
 
@@ -73,7 +79,18 @@ get_index
 function result(){
    
     head -1 ${infile} > result.xls
-    sed '1d' ${infile} | awk -F "\t" '{print $${{childindex}} }'
+    fileline=` expr $(wc -l < ${infile}) - 1 `   
+    echo $fileline
+    #利用sed遍历每行文件
+    for i in `seq 1 5`;do
+        childtype=$(sed '1d' ${infile} | sed -n "${i}p" | cut -f ${childindex})
+        if [[ ${childtype} =~ "0/1" ]];then
+            echo $childtype
+        else    
+            echo "非杂合位点" ${childtype}
+        fi
+    done
+    #fathertype=$(sed)
    
 }
 
