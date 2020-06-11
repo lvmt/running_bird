@@ -1,0 +1,83 @@
+#!/bin/bash
+
+
+echo -e "\033[32m\n地球是圆的，而看似像终点的地方可能也只是起点。\n \033[0m"
+
+
+# 如果不指定输入结果名称，使用默认名称
+outfile="result."`date +%Y-%m-%d`
+
+
+function Site() {
+	
+	echo -e "\033[31m输出结果名称为：$outfile\033[0m"
+
+	less $infile | awk -F "\t" 'NR < 2{print $0}NR>1{if($2 == '''$chr''' && $3 > '''$newstart''' && $3 < '''$newend''')print $0}' > $outfile
+
+}
+
+
+function x2t() {
+
+	echo -e "结果文件进行格式转换：${outfile} ===> ${outfile}.xlsx"
+
+	python /WORK/Disease/lmt/Code/xls2txt/xls2txt.py ${outfile} ${outfile}.xlsx t2x
+
+}
+
+
+while getopts ":i:c:s:e:o:hf" opt;do
+	case $opt in 
+	i)
+		infile=$OPTARG
+		echo -e "\033[32m输入文件为：$infile\033[0m"
+		;;
+	c)
+		chr=$OPTARG
+		echo -e "\033[32m查询的染色体为：$chr\033[0m"
+		;;
+	s)	
+		start=$OPTARG
+		newstart=`expr ${start} - 1`
+		echo -e "\033[32m查询的起始位置为：$start\033[0m"
+		;;
+	e)
+		end=$OPTARG
+		newend=`expr ${end} + 1`
+		echo -e "\033[32m查询的终止位置为：$end\033[0m"
+		;;
+	o)
+		outfile=$OPTARG
+		;;
+	f)
+		;;
+	h)
+		echo -e '''
+		使用帮助：
+		1)
+		site -i infile -c chr -s start -e end 
+		2)
+		site -i infile -c chr -s start -e end -o result # 自己指定输出结果名称
+		3)
+		site -i infile -c chr -s start -e end [-o result] -f  # 是否对生成的结果文件进行格式转换
+		4)
+		site -o file -f  # 对file文件进行格式转换
+		'''
+	esac
+done
+
+if [ $infile"x" != "x" -a $chr"x" != "x" -a $start"x" != "x" -a $end"x" != "x" ]; then
+	echo "开始提取结果......"
+	Site
+	if [[ $f"x" == "x" ]]; then
+		x2t
+	fi
+elif [ -s $outfile  -a $f"x" == "x" ]; then
+	x2t
+elif [[ "$@x" == "x" ]]; then
+	# echo "小朋友, 你是不是忘记啥啦......"
+	# echo "查看帮助： site -h"
+	site -h 	 
+fi
+
+
