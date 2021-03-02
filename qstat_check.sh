@@ -3,6 +3,10 @@
 # 验收shell学习成果
 
 
+clear 
+
+echo -e "\033[31m\n地球是圆的，而看似像终点的地方可能也只是起点。\n \033[0m"
+
 function get_job_id() {
     ids=$(qstat |  less  | cut -d  " " -f1  | sed -n  '3,$p')
     num=$(echo ${ids} | tr " " "\n" | wc -l )
@@ -35,7 +39,7 @@ while getopts "i:ahs" opt;do
         get_job_id
         n=1
         for id in $ids;do
-            echo -e """\033[31m${n}\033[0m"""
+            echo -e """\033[31m>>> ${n}\t${id}\033[0m"""
             get_id_info
             n=`expr ${n} + 1`
             echo -e "\n"
